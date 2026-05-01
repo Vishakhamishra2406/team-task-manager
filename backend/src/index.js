@@ -4,19 +4,24 @@ const cors = require('cors');
 
 const app = express();
 
-// 1. Improved CORS configuration
+// 1. Standard CORS configuration
 app.use(cors({
   origin: process.env.FRONTEND_URL 
     ? process.env.FRONTEND_URL.split(',').map(url => url.trim()) 
-    : true, 
+    : true,
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// 2. FIXED: Explicitly handle OPTIONS requests (Preflight)
-// Using (.*) instead of * to prevent the PathError crash in Express 4/5
-app.options('(.*)', cors()); 
+// 2. The "Safe" way to handle OPTIONS requests (Preflight)
+// This avoids the (.*) syntax that caused your PathError crash
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 app.use(express.json());
 
@@ -29,8 +34,8 @@ app.use('/api/dashboard', require('./routes/dashboard'));
 // Health check for Railway monitoring
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// 3. Port must use process.env.PORT for Railway networking
-// Ensure your Railway service settings are also set to port 8080
+// 3. Port Configuration
+// Matches your Railway dashboard networking setting
 const PORT = process.env.PORT || 8080; 
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
