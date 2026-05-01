@@ -5,9 +5,7 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL 
-    ? process.env.FRONTEND_URL.split(',').map(url => url.trim()) 
-    : '*',
+  origin: true, // temporarily allow all origins
   credentials: true,
 }));
 app.use(express.json());
