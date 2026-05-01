@@ -43,30 +43,35 @@ export default function MembersPanel({ projectId, members, userRole, currentUser
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <ul className="space-y-1" role="list">
         {members.map(m => (
-          <li key={m.id} className="flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 hover:bg-stone-50 transition-colors">
+          <li key={m.id} className="flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 transition-colors"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(99,102,241,0.15)' }}>
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center text-xs font-bold shrink-0">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 text-white"
+                style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)' }}>
                 {m.user.name.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-stone-800 truncate">{m.user.name}</p>
-                <p className="text-xs text-stone-400 truncate">{m.user.email}</p>
+                <p className="text-sm font-semibold truncate text-white">{m.user.name}</p>
+                <p className="text-xs truncate" style={{ color: '#6366f1' }}>{m.user.email}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <span className={`rounded-md px-2 py-0.5 text-xs font-medium ${m.role === 'ADMIN' ? 'bg-violet-100 text-violet-700' : 'bg-stone-100 text-stone-600'}`}>
+              <span className="rounded-lg px-2 py-0.5 text-xs font-semibold"
+                style={m.role === 'ADMIN'
+                  ? { background: '#ede9fe', color: '#6d28d9' }
+                  : { background: '#f1f5f9', color: '#475569' }}>
                 {m.role === 'ADMIN' ? 'Admin' : 'Member'}
               </span>
               {userRole === 'ADMIN' && m.user.id !== currentUserId && (
-                <button
-                  onClick={() => handleRemove(m.user.id, m.user.name)}
+                <button onClick={() => handleRemove(m.user.id, m.user.name)}
                   disabled={removingId === m.user.id}
-                  className="text-stone-300 hover:text-rose-500 disabled:opacity-50 transition-colors"
-                  aria-label={`Remove ${m.user.name}`}
-                >
+                  className="transition-colors disabled:opacity-50"
+                  style={{ color: '#cbd5e1' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#e11d48')}
+                  onMouseLeave={e => (e.currentTarget.style.color = '#cbd5e1')}>
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -78,20 +83,20 @@ export default function MembersPanel({ projectId, members, userRole, currentUser
       </ul>
 
       {userRole === 'ADMIN' && (
-        <form onSubmit={handleAdd} noValidate className="pt-3 border-t border-stone-100 space-y-2">
-          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Add member</p>
+        <form onSubmit={handleAdd} noValidate className="pt-3 space-y-2" style={{ borderTop: '1px solid #e2e8f0' }}>
+          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#94a3b8' }}>Add member</p>
           <div className="flex gap-2">
-            <input
-              type="email" required value={email} onChange={e => setEmail(e.target.value)}
+            <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
               disabled={addLoading} placeholder="colleague@company.com"
-              className="flex-1 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white disabled:opacity-50 transition"
-            />
+              className="flex-1 rounded-xl px-3 py-2 text-sm focus:outline-none transition"
+              style={{ border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b' }} />
             <button type="submit" disabled={addLoading || !email.trim()}
-              className="rounded-xl bg-violet-600 px-3 py-2 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 transition"
+              style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)' }}>
               {addLoading ? '…' : 'Add'}
             </button>
           </div>
-          {addError && <p role="alert" className="text-xs text-rose-600">{addError}</p>}
+          {addError && <p className="text-xs" style={{ color: '#e11d48' }}>{addError}</p>}
         </form>
       )}
     </div>

@@ -47,13 +47,14 @@ export default function TaskList({ tasks, members, projectId, userRole, currentU
   if (tasks.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-14 text-center">
-        <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mb-3">
-          <svg className="w-6 h-6 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+          style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.2)' }}>
+          <svg className="w-6 h-6" style={{ color: '#818cf8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
         </div>
-        <p className="text-sm font-medium text-stone-600">No tasks yet</p>
-        <p className="text-xs text-stone-400 mt-0.5">Add a task to get started</p>
+        <p className="text-sm font-semibold text-white">No tasks yet</p>
+        <p className="text-xs mt-0.5" style={{ color: '#6366f1' }}>Add a task to get started</p>
       </div>
     )
   }
@@ -65,52 +66,43 @@ export default function TaskList({ tasks, members, projectId, userRole, currentU
           const isOwn = task.assignedTo?.id === currentUserId
           const isDeleting = deletingId === task.id
           const isUpdating = updatingId === task.id
-
           return (
-            <li key={task.id} className="group rounded-xl border border-stone-100 bg-stone-50 hover:bg-white hover:border-stone-200 hover:shadow-sm p-4 transition-all">
+            <li key={task.id} className="rounded-xl p-4 transition-all hover:shadow-sm"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(99,102,241,0.2)' }}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-stone-900 truncate">{task.title}</p>
+                  <p className="text-sm font-semibold truncate text-white">{task.title}</p>
                   {task.description && (
-                    <p className="text-xs text-stone-500 mt-0.5 line-clamp-1">{task.description}</p>
+                    <p className="text-xs mt-0.5 line-clamp-1" style={{ color: '#a5b4fc' }}>{task.description}</p>
                   )}
                   <div className="flex flex-wrap items-center gap-1.5 mt-2">
                     <Badge type="status" value={task.status} />
                     <Badge type="priority" value={task.priority} />
-                    {task.dueDate && (
-                      <span className="text-xs text-stone-400">· {fmtDate(task.dueDate)}</span>
-                    )}
-                    {task.assignedTo && (
-                      <span className="text-xs text-stone-400">· {task.assignedTo.name}</span>
-                    )}
+                    {task.dueDate && <span className="text-xs" style={{ color: '#6366f1' }}>· {fmtDate(task.dueDate)}</span>}
+                    {task.assignedTo && <span className="text-xs" style={{ color: '#6366f1' }}>· {task.assignedTo.name}</span>}
                   </div>
                 </div>
-
                 <div className="flex items-center gap-1.5 shrink-0">
                   {userRole === 'ADMIN' && (
                     <>
-                      <button
-                        onClick={() => setEditingTask(task)} disabled={isDeleting}
-                        className="rounded-lg border border-stone-200 px-2.5 py-1 text-xs font-medium text-stone-600 hover:bg-stone-100 disabled:opacity-50 transition-colors"
-                      >
+                      <button onClick={() => setEditingTask(task)} disabled={isDeleting}
+                        className="rounded-lg px-2.5 py-1 text-xs font-medium transition-colors disabled:opacity-50"
+                        style={{ border: '1px solid #e2e8f0', color: '#475569', background: '#fff' }}>
                         Edit
                       </button>
-                      <button
-                        onClick={() => handleDelete(task.id)} disabled={isDeleting}
-                        className="rounded-lg border border-rose-100 px-2.5 py-1 text-xs font-medium text-rose-500 hover:bg-rose-50 disabled:opacity-50 transition-colors"
-                      >
+                      <button onClick={() => handleDelete(task.id)} disabled={isDeleting}
+                        className="rounded-lg px-2.5 py-1 text-xs font-medium transition-colors disabled:opacity-50"
+                        style={{ border: '1px solid #fecdd3', color: '#e11d48', background: '#fff1f2' }}>
                         {isDeleting ? '…' : 'Delete'}
                       </button>
                     </>
                   )}
                   {userRole === 'MEMBER' && isOwn && (
-                    <select
-                      value={task.status}
+                    <select value={task.status}
                       onChange={e => handleStatusChange(task.id, e.target.value as Task['status'])}
                       disabled={isUpdating}
-                      aria-label={`Status for ${task.title}`}
-                      className="rounded-lg border border-stone-200 bg-white px-2 py-1 text-xs text-stone-700 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50"
-                    >
+                      className="rounded-lg px-2 py-1 text-xs focus:outline-none disabled:opacity-50"
+                      style={{ border: '1px solid #e2e8f0', color: '#475569', background: '#fff' }}>
                       <option value="TODO">To Do</option>
                       <option value="IN_PROGRESS">In Progress</option>
                       <option value="DONE">Done</option>
@@ -122,13 +114,10 @@ export default function TaskList({ tasks, members, projectId, userRole, currentU
           )
         })}
       </ul>
-
       {editingTask && (
-        <TaskModal
-          projectId={projectId} members={members} task={editingTask}
+        <TaskModal projectId={projectId} members={members} task={editingTask}
           onClose={() => setEditingTask(null)}
-          onSaved={() => { setEditingTask(null); onTaskUpdated() }}
-        />
+          onSaved={() => { setEditingTask(null); onTaskUpdated() }} />
       )}
     </>
   )

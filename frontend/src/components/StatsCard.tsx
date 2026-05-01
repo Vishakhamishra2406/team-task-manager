@@ -6,19 +6,19 @@ interface StatsCardProps {
 }
 
 const styles = {
-  default: { wrap: 'bg-white border-stone-200',   num: 'text-stone-900', lbl: 'text-stone-500' },
-  red:     { wrap: 'bg-rose-50 border-rose-100',  num: 'text-rose-700',  lbl: 'text-rose-500' },
-  green:   { wrap: 'bg-emerald-50 border-emerald-100', num: 'text-emerald-700', lbl: 'text-emerald-600' },
-  amber:   { wrap: 'bg-amber-50 border-amber-100', num: 'text-amber-700', lbl: 'text-amber-600' },
+  default: { bg: '#ffffff', border: '#e2e8f0', num: '#1e293b', lbl: '#64748b', icon: '#6366f1' },
+  red:     { bg: '#fff1f2', border: '#fecdd3', num: '#be123c', lbl: '#e11d48', icon: '#f43f5e' },
+  green:   { bg: '#f0fdf4', border: '#bbf7d0', num: '#15803d', lbl: '#16a34a', icon: '#22c55e' },
+  amber:   { bg: '#fffbeb', border: '#fde68a', num: '#b45309', lbl: '#d97706', icon: '#f59e0b' },
 }
 
 export default function StatsCard({ label, value, accent = 'default', icon }: StatsCardProps) {
   const s = styles[accent]
   return (
-    <div className={`rounded-2xl border p-5 ${s.wrap}`}>
-      {icon && <p className="text-2xl mb-2">{icon}</p>}
-      <p className={`text-3xl font-bold tabular-nums ${s.num}`}>{value}</p>
-      <p className={`text-xs font-medium mt-1 ${s.lbl}`}>{label}</p>
+    <div className="rounded-2xl p-5 shadow-sm" style={{ background: s.bg, border: `1px solid ${s.border}` }}>
+      {icon && <p className="text-xl mb-3">{icon}</p>}
+      <p className="text-3xl font-bold tabular-nums" style={{ color: s.num }}>{value}</p>
+      <p className="text-xs font-semibold mt-1.5 uppercase tracking-wide" style={{ color: s.lbl }}>{label}</p>
     </div>
   )
 }

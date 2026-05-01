@@ -9,6 +9,9 @@ import TaskModal from '../components/TaskModal'
 import MembersPanel from '../components/MembersPanel'
 import type { ProjectDetail } from '../components/TaskModal'
 
+const darkCard = { background: 'linear-gradient(135deg, #1e1b4b 0%, #1e2a4a 100%)', border: '1px solid #2d3561' }
+const glowBadge = { background: 'rgba(99,102,241,0.2)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.3)' }
+
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { user } = useAuth()
@@ -30,20 +33,20 @@ export default function ProjectDetailPage() {
 
   useEffect(() => { fetchProject() }, [id]) // eslint-disable-line
 
-  const Spinner = () => (
+  if (loading) return (
     <Layout>
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 rounded-full border-2 border-violet-600 border-t-transparent animate-spin" />
+        <div className="w-6 h-6 rounded-full border-2 border-t-transparent animate-spin"
+          style={{ borderColor: '#6366f1', borderTopColor: 'transparent' }} />
       </div>
     </Layout>
   )
 
-  if (loading) return <Spinner />
   if (error || !project) return (
     <Layout>
       <div className="max-w-xl mx-auto px-6 py-16 text-center">
-        <p className="text-rose-600 font-medium mb-4">{error ?? 'Project not found'}</p>
-        <Link to="/projects" className="text-sm text-violet-600 hover:text-violet-700">← Back to projects</Link>
+        <p className="font-medium mb-4" style={{ color: '#e11d48' }}>{error ?? 'Project not found'}</p>
+        <Link to="/projects" className="text-sm" style={{ color: '#818cf8' }}>← Back to projects</Link>
       </div>
     </Layout>
   )
@@ -54,33 +57,35 @@ export default function ProjectDetailPage() {
   return (
     <Layout>
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-400 mb-2">
-              <Link to="/projects" className="hover:text-violet-600 transition-colors">Projects</Link>
-              <span>/</span>
-              <span className="text-stone-600 font-medium">{project.name}</span>
-            </div>
-            <h1 className="text-xl font-bold text-stone-900">{project.name}</h1>
-            {project.description && <p className="text-sm text-stone-500 mt-1">{project.description}</p>}
-          </div>
 
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl px-7 py-6 shadow-lg"
+          style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #1e3a5f 100%)' }}>
+          <div>
+            <div className="flex items-center gap-1.5 text-xs mb-1.5" style={{ color: '#818cf8' }}>
+              <Link to="/projects" className="hover:text-white transition-colors">Projects</Link>
+              <span>/</span>
+              <span style={{ color: '#c7d2fe' }}>{project.name}</span>
+            </div>
+            <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#818cf8' }}>Project</p>
+            <h1 className="text-2xl font-bold text-white tracking-tight">{project.name}</h1>
+            {project.description && <p className="text-sm mt-0.5" style={{ color: '#a5b4fc' }}>{project.description}</p>}
+          </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Link
-              to={`/projects/${project.id}/dashboard`}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors"
-            >
+            <Link to={`/projects/${project.id}/dashboard`}
+              className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all"
+              style={{ background: 'rgba(255,255,255,0.08)', color: '#c7d2fe', border: '1px solid rgba(255,255,255,0.15)' }}>
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
               Dashboard
             </Link>
             {userRole === 'ADMIN' && (
-              <button
-                onClick={() => setShowTaskModal(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-3 py-2 text-sm font-semibold text-white hover:bg-violet-700 transition-colors"
-              >
+              <button onClick={() => setShowTaskModal(true)}
+                className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-all"
+                style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.25)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')}>
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
@@ -92,36 +97,34 @@ export default function ProjectDetailPage() {
 
         {/* Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <section className="lg:col-span-2 bg-white rounded-2xl border border-stone-200 p-5">
+          <section className="lg:col-span-2 rounded-2xl p-5 shadow-sm" style={darkCard}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold text-stone-800">Tasks</h2>
-              <span className="text-xs text-stone-400 bg-stone-100 rounded-full px-2 py-0.5">{project.tasks.length}</span>
+              <h2 className="text-sm font-bold text-white">Tasks</h2>
+              <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={glowBadge}>
+                {project.tasks.length}
+              </span>
             </div>
-            <TaskList
-              tasks={project.tasks} members={project.members} projectId={project.id}
-              userRole={userRole} currentUserId={currentUserId} onTaskUpdated={fetchProject}
-            />
+            <TaskList tasks={project.tasks} members={project.members} projectId={project.id}
+              userRole={userRole} currentUserId={currentUserId} onTaskUpdated={fetchProject} />
           </section>
 
-          <section className="bg-white rounded-2xl border border-stone-200 p-5">
+          <section className="rounded-2xl p-5 shadow-sm" style={darkCard}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold text-stone-800">Members</h2>
-              <span className="text-xs text-stone-400 bg-stone-100 rounded-full px-2 py-0.5">{project.members.length}</span>
+              <h2 className="text-sm font-bold text-white">Members</h2>
+              <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={glowBadge}>
+                {project.members.length}
+              </span>
             </div>
-            <MembersPanel
-              projectId={project.id} members={project.members}
-              userRole={userRole} currentUserId={currentUserId} onMembersUpdated={fetchProject}
-            />
+            <MembersPanel projectId={project.id} members={project.members}
+              userRole={userRole} currentUserId={currentUserId} onMembersUpdated={fetchProject} />
           </section>
         </div>
       </div>
 
       {showTaskModal && (
-        <TaskModal
-          projectId={project.id} members={project.members}
+        <TaskModal projectId={project.id} members={project.members}
           onClose={() => setShowTaskModal(false)}
-          onSaved={() => { setShowTaskModal(false); fetchProject() }}
-        />
+          onSaved={() => { setShowTaskModal(false); fetchProject() }} />
       )}
     </Layout>
   )
