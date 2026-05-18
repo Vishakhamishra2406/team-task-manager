@@ -7,7 +7,7 @@ import api from '../lib/api'
 import Layout from '../components/Layout'
 import CreateProjectModal from '../components/CreateProjectModal'
 import { getAvatarGradient } from '../lib/utils'
-import { PageTitle, AnimatedSection, FadeUpText } from '../components/AnimatedText'
+import { PageTitle, FadeUpText } from '../components/AnimatedText'
 
 interface Project {
   id: string

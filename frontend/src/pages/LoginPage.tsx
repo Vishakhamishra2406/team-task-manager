@@ -8,10 +8,8 @@ import { useAuth } from '../context/AuthContext'
 import { extractError } from '../lib/utils'
 import Spinner from '../components/Spinner'
 import {
-  GradientHeading,
   BlurReveal,
   GlowPulse,
-  TypewriterText,
 } from '../components/AnimatedText'
 
 const features = [
