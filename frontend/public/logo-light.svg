@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 44" fill="none" role="img" aria-label="Taskly">
+  <defs>
+    <linearGradient id="ll-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="50%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <radialGradient id="ll-glow" cx="35%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="#a5b4fc" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#4338ca" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ll-bolt" x1="15%" y1="0%" x2="85%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.97"/>
+      <stop offset="100%" stop-color="#e0e7ff" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="ll-accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+    <filter id="ll-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#4f46e5" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Icon mark -->
+  <rect x="0.5" y="0.5" width="43" height="43" rx="12" fill="url(#ll-bg)" filter="url(#ll-shadow)"/>
+  <rect x="0.5" y="0.5" width="43" height="43" rx="12" fill="url(#ll-glow)"/>
+  <rect x="1" y="1" width="42" height="19" rx="11.5" fill="white" fill-opacity="0.1"/>
+  <rect x="1" y="1" width="42" height="42" rx="11.5" stroke="white" stroke-opacity="0.2" stroke-width="0.75"/>
+
+  <path
+    d="M26 5L14 23.5H22L18 39L31 20.5H23L26 5Z"
+    fill="url(#ll-bolt)"
+    stroke="white" stroke-opacity="0.1" stroke-width="0.4" stroke-linejoin="round"
+  />
+
+  <!-- Wordmark — dark text for light backgrounds -->
+  <text
+    x="57"
+    y="29"
+    font-family="'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="21"
+    font-weight="700"
+    letter-spacing="-0.4"
+    fill="#1e1b4b"
+  >Taskly</text>
+
+  <!-- Accent underline -->
+  <rect x="57" y="36" width="52" height="1.5" rx="0.75" fill="url(#ll-accent)" opacity="0.6"/>
+</svg>

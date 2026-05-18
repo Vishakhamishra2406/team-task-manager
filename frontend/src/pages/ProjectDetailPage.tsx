@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { LayoutDashboard, Plus, ChevronRight, Users, CheckSquare, AlertCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import api from '../lib/api'
 import { useAuth } from '../context/AuthContext'
@@ -7,10 +8,22 @@ import Layout from '../components/Layout'
 import TaskList from '../components/TaskList'
 import TaskModal from '../components/TaskModal'
 import MembersPanel from '../components/MembersPanel'
+import Spinner from '../components/Spinner'
 import type { ProjectDetail } from '../components/TaskModal'
 
-const darkCard = { background: 'linear-gradient(135deg, #1e1b4b 0%, #1e2a4a 100%)', border: '1px solid #2d3561' }
-const glowBadge = { background: 'rgba(99,102,241,0.2)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.3)' }
+function DetailSkeleton() {
+  return (
+    <Layout>
+      <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
+        <div className="skeleton h-28 rounded-2xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2 skeleton h-64 rounded-2xl" />
+          <div className="skeleton h-64 rounded-2xl" />
+        </div>
+      </div>
+    </Layout>
+  )
+}
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -24,107 +37,183 @@ export default function ProjectDetailPage() {
     if (!id) return
     try {
       const r = await api.get<ProjectDetail>(`/api/projects/${id}`)
-      setProject(r.data); setError(null)
+      setProject(r.data)
+      setError(null)
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error ?? 'Failed to load project'
-      setError(msg); toast.error(msg)
-    } finally { setLoading(false) }
+      setError(msg)
+      toast.error(msg)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { fetchProject() }, [id]) // eslint-disable-line
 
-  if (loading) return (
-    <Layout>
-      <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: '#6366f1', borderTopColor: 'transparent' }} />
-      </div>
-    </Layout>
-  )
+  if (loading) return <DetailSkeleton />
 
   if (error || !project) return (
     <Layout>
-      <div className="max-w-xl mx-auto px-6 py-16 text-center">
-        <p className="font-medium mb-4" style={{ color: '#e11d48' }}>{error ?? 'Project not found'}</p>
-        <Link to="/projects" className="text-sm" style={{ color: '#818cf8' }}>← Back to projects</Link>
+      <div className="max-w-xl mx-auto px-6 py-20 text-center">
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5"
+          style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)' }}>
+          <AlertCircle size={24} style={{ color: '#f87171' }} />
+        </div>
+        <p className="font-semibold mb-2" style={{ color: '#f87171' }}>{error ?? 'Project not found'}</p>
+        <Link to="/projects" className="text-sm font-medium transition-colors hover:text-indigo-300"
+          style={{ color: '#818cf8' }}>
+          ← Back to projects
+        </Link>
       </div>
     </Layout>
   )
 
   const userRole = project.role
   const currentUserId = user?.id ?? ''
+  const doneTasks = project.tasks.filter(t => t.status === 'DONE').length
+  const progressPct = project.tasks.length > 0 ? Math.round((doneTasks / project.tasks.length) * 100) : 0
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+      <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl px-7 py-6 shadow-lg"
-          style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #1e3a5f 100%)' }}>
-          <div>
-            <div className="flex items-center gap-1.5 text-xs mb-1.5" style={{ color: '#818cf8' }}>
-              <Link to="/projects" className="hover:text-white transition-colors">Projects</Link>
-              <span>/</span>
-              <span style={{ color: '#c7d2fe' }}>{project.name}</span>
+        {/* ── Header ───────────────────────────── */}
+        <div className="rounded-2xl px-7 py-6 fade-up relative overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #0d1a35 0%, #111f3e 50%, #0f1c30 100%)',
+            border: '1px solid rgba(99,102,241,0.2)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+          }}>
+          {/* Decorative orb */}
+          <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full opacity-10 pointer-events-none"
+            style={{ background: '#6366f1', filter: 'blur(40px)' }} />
+
+          <div className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
+            <div className="flex-1 min-w-0">
+              {/* Breadcrumb */}
+              <div className="flex items-center gap-1.5 text-[11px] mb-3" style={{ color: '#3d5a7a' }}>
+                <Link to="/projects" className="transition-colors hover:text-indigo-400">Projects</Link>
+                <ChevronRight size={11} />
+                <span style={{ color: '#818cf8' }}>{project.name}</span>
+              </div>
+
+              <h1 className="text-xl font-bold tracking-tight mb-1" style={{ color: '#f0f4ff' }}>
+                {project.name}
+              </h1>
+              {project.description && (
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  {project.description}
+                </p>
+              )}
+
+              {/* Progress */}
+              {project.tasks.length > 0 && (
+                <div className="mt-4 max-w-xs">
+                  <div className="flex items-center justify-between text-[11px] mb-1.5">
+                    <span style={{ color: 'var(--text-muted)' }}>Progress</span>
+                    <span style={{ color: '#818cf8' }}>{progressPct}%</span>
+                  </div>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(99,102,241,0.1)' }}>
+                    <div className="h-full rounded-full progress-bar"
+                      style={{ width: `${progressPct}%`, background: 'linear-gradient(90deg,#6366f1,#3b82f6)' }} />
+                  </div>
+                  <p className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>
+                    {doneTasks} of {project.tasks.length} tasks completed
+                  </p>
+                </div>
+              )}
             </div>
-            <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#818cf8' }}>Project</p>
-            <h1 className="text-2xl font-bold text-white tracking-tight">{project.name}</h1>
-            {project.description && <p className="text-sm mt-0.5" style={{ color: '#a5b4fc' }}>{project.description}</p>}
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <Link to={`/projects/${project.id}/dashboard`}
-              className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all"
-              style={{ background: 'rgba(255,255,255,0.08)', color: '#c7d2fe', border: '1px solid rgba(255,255,255,0.15)' }}>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Dashboard
-            </Link>
-            {userRole === 'ADMIN' && (
-              <button onClick={() => setShowTaskModal(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-all"
-                style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.25)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')}>
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                New task
-              </button>
-            )}
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                to={`/projects/${project.id}/dashboard`}
+                className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all"
+                style={{ background: 'rgba(99,102,241,0.1)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.2)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.2)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.35)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.1)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.2)' }}
+              >
+                <LayoutDashboard size={13} />
+                Dashboard
+              </Link>
+              {userRole === 'ADMIN' && (
+                <button
+                  onClick={() => setShowTaskModal(true)}
+                  className="btn-primary inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-semibold text-white"
+                >
+                  <Plus size={13} />
+                  New task
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Content */}
+        {/* ── Content grid ─────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <section className="lg:col-span-2 rounded-2xl p-5 shadow-sm" style={darkCard}>
+
+          {/* Tasks panel */}
+          <section
+            className="lg:col-span-2 rounded-2xl p-5 fade-up stagger-1"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
+          >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold text-white">Tasks</h2>
-              <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={glowBadge}>
+              <div className="flex items-center gap-2.5">
+                <CheckSquare size={15} style={{ color: '#6366f1' }} />
+                <h2 className="text-sm font-bold" style={{ color: '#e0e7ff' }}>Tasks</h2>
+              </div>
+              <span
+                className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+                style={{ background: 'rgba(99,102,241,0.15)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.25)' }}
+              >
                 {project.tasks.length}
               </span>
             </div>
-            <TaskList tasks={project.tasks} members={project.members} projectId={project.id}
-              userRole={userRole} currentUserId={currentUserId} onTaskUpdated={fetchProject} />
+            <TaskList
+              tasks={project.tasks}
+              members={project.members}
+              projectId={project.id}
+              userRole={userRole}
+              currentUserId={currentUserId}
+              onTaskUpdated={fetchProject}
+            />
           </section>
 
-          <section className="rounded-2xl p-5 shadow-sm" style={darkCard}>
+          {/* Members panel */}
+          <section
+            className="rounded-2xl p-5 fade-up stagger-2"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
+          >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold text-white">Members</h2>
-              <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={glowBadge}>
+              <div className="flex items-center gap-2.5">
+                <Users size={15} style={{ color: '#6366f1' }} />
+                <h2 className="text-sm font-bold" style={{ color: '#e0e7ff' }}>Members</h2>
+              </div>
+              <span
+                className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+                style={{ background: 'rgba(99,102,241,0.15)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.25)' }}
+              >
                 {project.members.length}
               </span>
             </div>
-            <MembersPanel projectId={project.id} members={project.members}
-              userRole={userRole} currentUserId={currentUserId} onMembersUpdated={fetchProject} />
+            <MembersPanel
+              projectId={project.id}
+              members={project.members}
+              userRole={userRole}
+              currentUserId={currentUserId}
+              onMembersUpdated={fetchProject}
+            />
           </section>
         </div>
       </div>
 
       {showTaskModal && (
-        <TaskModal projectId={project.id} members={project.members}
+        <TaskModal
+          projectId={project.id}
+          members={project.members}
           onClose={() => setShowTaskModal(false)}
-          onSaved={() => { setShowTaskModal(false); fetchProject() }} />
+          onSaved={() => { setShowTaskModal(false); fetchProject() }}
+        />
       )}
     </Layout>
   )
