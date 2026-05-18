@@ -18,7 +18,7 @@ import {
   motion,
   useInView,
 } from 'framer-motion'
-import type { Variants } from 'framer-motion'
+import type { Variants, Target } from 'framer-motion'
 
 /* ─────────────────────────────────────────────────────────
    Shared easing curves
@@ -365,7 +365,6 @@ export function AnimatedSection({
   delay = 0,
   className = '',
   style,
-  as = 'div',
 }: AnimatedSectionProps) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-60px 0px' })
@@ -513,12 +512,12 @@ export function SlideIn({
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-20px 0px' })
 
-  const initial =
+  const initial: Target =
     from === 'left'  ? { opacity: 0, x: -20 } :
     from === 'right' ? { opacity: 0, x: 20 }  :
                        { opacity: 0, y: 16 }
 
-  const animate = inView
+  const animate: Target = inView
     ? { opacity: 1, x: 0, y: 0 }
     : initial
 
