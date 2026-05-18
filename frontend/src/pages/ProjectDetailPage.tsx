@@ -8,7 +8,6 @@ import Layout from '../components/Layout'
 import TaskList from '../components/TaskList'
 import TaskModal from '../components/TaskModal'
 import MembersPanel from '../components/MembersPanel'
-import Spinner from '../components/Spinner'
 import type { ProjectDetail } from '../components/TaskModal'
 
 function DetailSkeleton() {
