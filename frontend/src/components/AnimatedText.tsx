@@ -17,10 +17,8 @@ import type { ReactNode, CSSProperties } from 'react'
 import {
   motion,
   useInView,
-  useAnimation,
-  AnimatePresence,
 } from 'framer-motion'
-import type { Variants, TargetAndTransition } from 'framer-motion'
+import type { Variants } from 'framer-motion'
 
 /* ─────────────────────────────────────────────────────────
    Shared easing curves
@@ -372,8 +370,6 @@ export function AnimatedSection({
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-60px 0px' })
 
-  const Tag = as
-
   return (
     <motion.div
       ref={ref}
@@ -517,12 +513,12 @@ export function SlideIn({
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-20px 0px' })
 
-  const initial: TargetAndTransition =
+  const initial =
     from === 'left'  ? { opacity: 0, x: -20 } :
     from === 'right' ? { opacity: 0, x: 20 }  :
                        { opacity: 0, y: 16 }
 
-  const animate: TargetAndTransition = inView
+  const animate = inView
     ? { opacity: 1, x: 0, y: 0 }
     : initial
 

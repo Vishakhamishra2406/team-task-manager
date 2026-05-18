@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import { extractError } from '../lib/utils'
 import Spinner from '../components/Spinner'
-import { BlurReveal, GlowPulse } from '../components/AnimatedText'
+import { BlurReveal } from '../components/AnimatedText'
 
 const perks = [
   { icon: <Users size={15} />, title: 'Team collaboration', desc: 'Invite unlimited team members' },
